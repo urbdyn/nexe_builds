@@ -28,11 +28,35 @@ jobs:
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{ steps.get_node_details.outputs.version }}
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.ccache/
+          key: ${{ matrix.os }}
 
       - run: npm ci
       - name: Run nexe CD build
         id: run_cd
-        run: ./bin/run_cd
+        run: |
+          ./bin/run_cd
+          echo "Creating dist/ dir if it doesn't exist ..."
+          mkdir -p dist/
+          echo "Getting release_file and release_id ..."
+          release_file="$(ls dist/ | head -n 1)"
+          release_id="$(cat ./RELEASE_ID)"
+          echo "Getting build_occurred ..."
+          if [ "$release_file" != "" ]; then
+            build_occurred="true"
+          else
+            build_occurred="false"
+          fi
+          echo "release_id=$release_id"
+          echo "release_file=$release_file"
+          echo "build_occurred=$build_occurred"
+          echo "::set-output name=release_id::$release_id"
+          echo "::set-output name=release_file::$release_file"
+          echo "::set-output name=build_occurred::$build_occurred"
         env:
           NODE_VERSION: ${{ matrix.node_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
