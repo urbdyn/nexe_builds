@@ -1,0 +1,18 @@
+# Setting this to 'monthly' interval for time being to
+# try and cut down on noise. Note that security updates
+# are always opened immediately. So this has no affect
+# on them.
+
+version: 2
+updates:
+- package-ecosystem: github-actions
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 15

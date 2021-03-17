@@ -1,3 +1,7 @@
+# From CI/CD process
+/RELEASE_ID
+/NEXE_ASSET_NAME
+
 # Logs
 logs
 *.log

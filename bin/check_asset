@@ -1,0 +1,171 @@
+#!/usr/bin/env node
+
+/**
+ * check_asset
+ * 
+ * Checks if target build has been published and lazily creates
+ * release if it doesn't exist.
+ * Exits cleanly if so and exits with code 10 if not.
+ * 
+ * Internal errors will exit with code 1.
+ * 
+ * Usage: check_asset NODE_VERSION COMMIT_HASH
+ */
+
+const { request } = require('@octokit/request');
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const assert = require('assert');
+
+const osNameMap = {
+    'darwin': 'macos',
+    'linux': 'linux',
+    'win32': 'windows',
+};
+const archNameMap = {
+    'x64': 'x64',
+    'x32': 'x86',
+};
+const osArch = os.arch();
+
+async function main() {
+    try {
+        let doCreate = true;
+        // Get CLI arg.
+        const myArgs = process.argv.slice(2);
+        if (myArgs.length === 0) {
+            console.log("Please provide target node.js version as first arg (ex: 14.16.0)");
+            process.exit(1);
+        }
+        if (myArgs.length === 1) {
+            console.log("Please provide target repo commit for release as second arg (use `git rev-parse HEAD`)");
+            process.exit(1);
+        }
+        if (myArgs.length === 3) {
+            assert(myArgs[2] === '--no-create-release', `Invalid flag given: ${myArgs[2]}`);
+            doCreate = false;
+        }
+        const apiToken = process.env.GITHUB_TOKEN;
+        if (!apiToken) {
+            console.log("Please provide github API token via env. var. GITHUB_TOKEN");
+            process.exit(1);
+        }
+        assert(Object.keys(osNameMap).includes(process.platform), `Unsupported platform: ${process.platform}`);
+        assert(Object.keys(archNameMap).includes(osArch), `Unsupported architecture: ${osArch}`);
+        const targetOs = osNameMap[process.platform];
+        const targetArch = archNameMap[osArch];
+        const targetNodeVersion = myArgs[0];
+        const releaseCommitish = myArgs[1];
+        const nexeAssetName = `${targetOs}-${targetArch}-${targetNodeVersion}`;
+        const packageData = getPackgeData();
+        const nexeVersion = packageData.dependencies.nexe.replace('^','');
+        assert(nexeVersion !== undefined && nexeVersion.length > 0, `Couldn't detect nexe version!`);
+
+        console.log(`nexeVersion = ${nexeVersion}`);
+        console.log(`releaseCommitish = ${releaseCommitish}`);
+        console.log(`targetOs = ${targetOs}`);
+        console.log(`targetArch = ${targetArch}`);
+        console.log(`targetNodeVersion = ${targetNodeVersion}`);
+        console.log(`nexeAssetName = ${nexeAssetName}`);
+
+        console.log(`Writing nexe asset name (${nexeAssetName}) to file: NEXE_ASSET_NAME`);
+        const releaseIdPath = path.join(__dirname, '../NEXE_ASSET_NAME');
+        fs.writeFileSync(releaseIdPath, nexeAssetName);
+
+        // Generate asset data
+        const assetData = genAssetData(packageData.version, targetOs);
+
+        console.log('Getting releases ...');
+        const getReleasesResult = await request("GET /repos/:owner/:repo/releases", {
+            headers: {
+                authorization: `token ${apiToken}`,
+            },
+            owner: assetData.owner,
+            repo: assetData.repo,
+        });
+        console.log('Releases retrieved.');
+        const releases = getReleasesResult.data.filter((value) => !value.prerelease);
+        //console.log(releases);
+        console.log(`${assetData.owner}/${assetData.repo}: ${releases.length} releases found.`);
+        const existingRelease = releases.filter((x) => x.tag_name === packageData.version).pop();
+        if (existingRelease) {
+            console.log(`Writing existing release ID (${existingRelease.id}) to file: RELEASE_ID`);
+            const releaseIdPath = path.join(__dirname, '../RELEASE_ID');
+            fs.writeFileSync(releaseIdPath, `${existingRelease.id}`);
+            const releaseAssetsNames = existingRelease.assets.map((x) => x.name);
+            console.log(`Existing assets for release ${packageData.version}:`, releaseAssetsNames);
+            const existingAsset = releaseAssetsNames.includes(nexeAssetName);
+            if (existingAsset) {
+                console.log(`Existing asset found: ${existingAsset}`);
+                console.log(`Build NOT needed. Exiting cleanly.`)
+                process.exit(0);
+            } else {
+                console.log(`Existing asset NOT found.`);
+                console.log(`Build needed! Exiting with error code 10.`)
+                process.exit(10);                
+            }
+        } else {
+            console.log(`No existing release version '${packageData.version}' found.`);
+            console.log(`Creating release '${packageData.version}' ...`)
+            const releaseBody = `Release of pre-built nexe binaries using nexe version: ${nexeVersion}`;
+            if (doCreate) {
+                // createRelease(owner, repo, tag_name, target_commitish, name, body)
+                const createResponse = await createRelease(
+                    apiToken,
+                    assetData.owner,
+                    assetData.repo,
+                    packageData.version,
+                    releaseCommitish,
+                    packageData.version,
+                    releaseBody
+                );
+                console.log('Release created.');
+                console.log(createResponse);
+            } else {
+                console.log('Skipping creating release due to --no-create-release flag.');
+            }
+            console.log(`Build needed! Exiting with error code 10.`)
+            process.exit(10);
+        }
+
+    } catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
+
+}
+
+function genAssetData(release, targetOs) {
+    // GET /repos/:owner/:repo/releases/assets/:asset_id
+    // https://api.github.com/repos/$1/releases/latest
+    return {
+        owner: "urbdyn",
+        repo: "nexe_builds",
+        artifactRegex: `^${targetOs}-.*`,
+        release
+    };
+}
+
+function getPackgeData() {
+    const packageJsonPath = path.join(__dirname, '../package.json');
+    return JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+}
+
+async function createRelease(apiToken, owner, repo, tag_name, target_commitish, name, body) {
+    return await request("POST /repos/:owner/:repo/releases", {
+        headers: {
+            authorization: `token ${apiToken}`,
+        },
+        owner,
+        repo,
+        tag_name,
+        target_commitish,
+        name,
+        body,
+        draft: false,
+        prerelease: false,
+    });
+}
+
+main()

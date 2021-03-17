@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
+script_dir="$repo_dir/bin"
+source "$script_dir/bash_utils.sh"
+
+os_env="$(get_os_type)"
+
+case "$os_env" in
+    "windows")
+        echo "Installing windows dependencies ..."
+        set -x
+        choco install nasm
+        set +x
+        ;;
+    "linux")
+        echo "Installing Ubuntu dependencies ..."
+        set -x
+        sudo apt-get install -y ccache
+        set +x
+        ;;
+    *)
+        echo "No dependencies to install for '$os_env'"
+        ;;
+esac

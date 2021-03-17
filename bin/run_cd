@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -e
+
+repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
+script_dir="$repo_dir/bin"
+
+if [ "$NODE_VERSION" = "" ]; then
+    echo "Please set NODE_VERSION env. var."
+    exit 1
+else
+    echo "NODE_VERSION=$NODE_VERSION"
+fi
+
+if [ "$CREATE_RELEASE" = "false" ]; then
+    check_asset_flags="--no-create-release"
+fi
+
+echo "Getting commit hash ..."
+GIT_COMMIT="$(git rev-parse HEAD)"
+echo "GIT_COMMIT=$GIT_COMMIT"
+echo ""
+
+echo "Running: bin/check_asset"
+set +e
+$script_dir/check_asset "$NODE_VERSION" "$GIT_COMMIT" $check_asset_flags
+exit_code="$?"
+set -e
+
+case "$exit_code" in
+    "0")
+        echo "Detected that build is not needed!"
+        exit 0
+        ;;
+    "10")
+        echo "Running: bin/install_dependencies"
+        $script_dir/install_dependencies        
+        echo "Running: bin/build_nexe build $NODE_VERSION"
+        $script_dir/build_nexe build "$NODE_VERSION"
+        ;;
+    *)
+        echo "Error exit code detected ($exit_code)! Crashing."
+        exit 1
+        ;;
+esac

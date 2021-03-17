@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+set -e
+
+repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
+script_dir="$repo_dir/bin"
+source "$script_dir/bash_utils.sh"
+
+node_target="$2"
+os_arch="$(arch)"
+if [ "$os_arch" = "x86_64" ]; then
+  os_arch="x64"
+fi
+nexe_target="${os_arch}-$node_target"
+os_env="$(get_os_type)"
+
+help_text="
+build_nexe 
+
+This script will build nexe no-mangle releases for use by nexe with Javascript files.
+
+Usage: build_nexe COMMAND NODE_VERSION
+
+Commands:
+  build                Compiles nexe build (targets local OS)
+  build-check          Checks whether prep has been done, prints OK or FAIL
+  help | --help | -h   Prints this menu
+
+"
+
+build_dir="$repo_dir/dist"
+nexe_no_mangle_name="$os_env-$nexe_target"
+nexe_no_mangle_path="$build_dir/$nexe_no_mangle_name"
+
+function main(){
+  cmd="$1"
+  case "$cmd" in
+    "help"|"--help"|"-h"|"")
+      echo "$help_text"
+      exit 0
+      ;;
+    "build-check")
+      if [ "$node_target" = "" ]; then
+        echo "Please pass node_target as second argument"
+        exit 1
+      fi
+      if [ -f "$nexe_no_mangle_path" ]; then
+        echo "OK"
+      else
+        echo "FAIL"
+      fi
+      ;;
+    "build")
+      if [ "$node_target" = "" ]; then
+        echo "Please pass node_target as second argument"
+        exit 1
+      fi
+      if [ -f "$nexe_no_mangle_path" ]; then
+        echo "Detected existing build! Skipping re-compile."
+        echo "  Existing build: $nexe_no_mangle_path"
+        exit 0
+      else
+        echo "No existing build detected. Compiling now."
+      fi
+
+      if command -v ccache &> /dev/null; then
+        echo "ccache detected!"
+        export CC="ccache gcc"
+        export CXX="ccache g++"
+      fi
+
+      echo "Creating build directory ($build_dir) ..."
+      mkdir -p "$build_dir"
+
+      case "$os_env" in
+        "linux"|"windows")
+          cpu_core_count="$(nproc)"
+          ;;
+        "macos")
+          cpu_core_count="$(sysctl -n hw.ncpu)"
+          ;;
+      esac
+
+      nexe_cmd="nexe --build --verbose --no-mange --target='$nexe_target' --make=-j$cpu_core_count"
+      nexe_cmd="$nexe_cmd -o $nexe_no_mangle_path '$repo_dir/index.js'"
+
+      echo "console.log()" > "$repo_dir/index.js"
+      echo "Building $nexe_no_mange_name"
+      echo "  $nexe_cmd"
+      time npx $nexe_cmd
+      rm "$repo_dir/index.js"
+      #echo "Compressing outputted file ..."
+      #cd "$build_dir"
+      #gzip -1 "./$nexe_no_mange_name"
+      ;;
+    *)
+      echo "Command is not supported: $cmd"
+      exit 1
+      ;;
+  esac
+}
+
+main $@
