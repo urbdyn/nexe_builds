@@ -19,6 +19,9 @@ case "$os_env" in
         sudo apt-get install -y ccache
         set +x
         ;;
+    "macos")
+        brew install ccache
+        ;;
     *)
         echo "No dependencies to install for '$os_env'"
         ;;

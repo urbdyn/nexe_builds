@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v2.1.5
         with:
           node-version: ${{ steps.get_node_details.outputs.version }}
-      - name: Cache multiple paths
+      - name: Declare caches for build
         uses: actions/cache@v2
         with:
           path: |
@@ -43,6 +43,7 @@ jobs:
           mkdir -p dist/
           echo "Getting release_file and release_id ..."
           release_file="$(ls dist/ | head -n 1)"
+          release_name="$(cat ./NEXE_ASSET_NAME)"
           release_id="$(cat ./RELEASE_ID)"
           echo "Getting build_occurred ..."
           if [ "$release_file" != "" ]; then
@@ -52,23 +53,30 @@ jobs:
           fi
           echo "release_id=$release_id"
           echo "release_file=$release_file"
+          echo "release_name=$release_name"
           echo "build_occurred=$build_occurred"
           echo "::set-output name=release_id::$release_id"
           echo "::set-output name=release_file::$release_file"
+          echo "::set-output name=release_name::$release_name"
           echo "::set-output name=build_occurred::$build_occurred"
         env:
           NODE_VERSION: ${{ matrix.node_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
  
-      # Upload release asset
+      # Upload artifact & asset
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v2
+        if: steps.run_cd.outputs.build_occurred == 'true'
+        with:
+          name: ${{ steps.run_cd.outputs.release_name }}
+          path: dist/${{ steps.run_cd.outputs.release_file }}
       - name: Upload Release Asset
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         if: steps.run_cd.outputs.build_occurred == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: https://uploads.github.com/repos/urbdyn/nexe_builds/releases/${{ steps.run_cd.outputs.release_id }}/assets{?name,label}
+          asset_name: ${{ steps.run_cd.outputs.release_name }}
           asset_path: dist/${{ steps.run_cd.outputs.release_file }}
-          asset_name: ${{ steps.run_cd.outputs.release_file }}
           asset_content_type: application/octet-stream

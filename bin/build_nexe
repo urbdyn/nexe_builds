@@ -5,14 +5,22 @@ set -e
 repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 script_dir="$repo_dir/bin"
 source "$script_dir/bash_utils.sh"
+os_env="$(get_os_type)"
 
 node_target="$2"
-os_arch="$(arch)"
+if [ "$os_env" = "macos" ]; then
+  os_arch="$(uname -m)"
+else
+  os_arch="$(arch)"
+fi
 if [ "$os_arch" = "x86_64" ]; then
   os_arch="x64"
 fi
+if [ "$os_arch" != "x64" ]; then
+  echo "Error! Unsupported architecture: $os_arch"
+  exit 1
+fi
 nexe_target="${os_arch}-$node_target"
-os_env="$(get_os_type)"
 
 help_text="
 build_nexe 
