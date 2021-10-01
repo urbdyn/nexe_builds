@@ -24,6 +24,6 @@
   "homepage": "https://github.com/urbdyn/nexe_builds#readme",
   "dependencies": {
     "@octokit/request": "^5.4.14",
-    "nexe": "^4.0.0-beta.18"
+    "nexe": "^4.0.0-beta.19"
   }
 }
