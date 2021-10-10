@@ -1,6 +1,6 @@
 # Nexe Builds
 
-> Current version `0.1.0`. Current remote URL: `https://github.com/urbdyn/nexe_builds/releases/download/0.1.0/`
+> Current version `0.1.1`. Current remote URL: `https://github.com/urbdyn/nexe_builds/releases/download/0.1.1/`
 
 [Nexe] is a fantastic tool for turning Node.js applications into single binaries.
 This repository provides automation to pre-build and distribute the node binaries, so you don't have to!
@@ -8,7 +8,7 @@ This repository provides automation to pre-build and distribute the node binarie
 
 ## How to Use
 
-To use the pre-built binaries with nexe just add `--remote https://github.com/urbdyn/nexe_builds/releases/download/0.1.0/`
+To use the pre-built binaries with nexe just add `--remote https://github.com/urbdyn/nexe_builds/releases/download/0.1.1/`
 
 Script example:
 
@@ -16,7 +16,7 @@ Script example:
 # Install Nexe
 npm install nexe
 # Save remote URL as variable
-NEXE_REMOTE="https://github.com/urbdyn/nexe_builds/releases/download/0.1.0/"
+NEXE_REMOTE="https://github.com/urbdyn/nexe_builds/releases/download/0.1.1/"
 # Do nexe build
 npx nexe ./myScript.js --remote "$NEXE_REMOTE"
 ```
