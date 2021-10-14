@@ -93,13 +93,15 @@ function main(){
       nexe_cmd="$nexe_cmd -o $nexe_no_mangle_path '$repo_dir/index.js'"
 
       echo "console.log()" > "$repo_dir/index.js"
-      echo "Building $nexe_no_mange_name"
+      echo "Building $nexe_no_mangle_name"
       echo "  $nexe_cmd"
       time npx $nexe_cmd
       rm "$repo_dir/index.js"
+      # Not compressing right now because nexe currently doesn't support downloading
+      # compressed prebuilt binaries.
       #echo "Compressing outputted file ..."
       #cd "$build_dir"
-      #gzip -1 "./$nexe_no_mange_name"
+      #gzip -1 "./$nexe_no_mangle_name"
       ;;
     *)
       echo "Command is not supported: $cmd"

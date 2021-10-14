@@ -34,12 +34,12 @@ case "$exit_code" in
         ;;
     "10")
         echo "Running: bin/install_dependencies"
-        $script_dir/install_dependencies        
+        $script_dir/install_dependencies || exit 2
         echo "Running: bin/build_nexe build $NODE_VERSION"
-        $script_dir/build_nexe build "$NODE_VERSION"
+        $script_dir/build_nexe build "$NODE_VERSION" || exit 3
         ;;
     *)
-        echo "Error exit code detected ($exit_code)! Crashing."
+        echo "Error exit code detected ($exit_code) from check_asset script! Crashing."
         exit 1
         ;;
 esac
