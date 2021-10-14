@@ -19,7 +19,7 @@ case "$os_env" in
         sudo apt-get install -y ccache
         set +x
         ;;
-    # Temporarily disabling to see if build works
+    # Temporarily disabling as it was causing build to fail for unknown reasons
     #"macos")
     #    echo "Installing macos dependencies ..."
     #    set -x

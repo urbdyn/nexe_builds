@@ -70,8 +70,8 @@ async function main() {
         console.log(`nexeAssetName = ${nexeAssetName}`);
 
         console.log(`Writing nexe asset name (${nexeAssetName}) to file: NEXE_ASSET_NAME`);
-        const releaseIdPath = path.join(__dirname, '../NEXE_ASSET_NAME');
-        fs.writeFileSync(releaseIdPath, nexeAssetName);
+        const assetNamePath = path.join(__dirname, '../NEXE_ASSET_NAME');
+        fs.writeFileSync(assetNamePath, nexeAssetName);
 
         // Generate asset data
         const assetData = genAssetData(packageData.version, targetOs);
@@ -98,14 +98,16 @@ async function main() {
             const existingAsset = releaseAssetsNames.includes(nexeAssetName);
             if (existingAsset) {
                 console.log(`Existing asset found: ${existingAsset}`);
-                console.log(`Build NOT needed. Exiting cleanly.`)
+                console.log(`Build NOT needed. Exiting cleanly.`);
                 process.exit(0);
             } else {
                 console.log(`Existing asset NOT found.`);
-                console.log(`Build needed! Exiting with error code 10.`)
+                console.log(`Build needed! Exiting with error code 10.`);
                 process.exit(10);                
             }
         } else {
+            let releaseId = 'none'; // Default to none unless release is created
+
             console.log(`No existing release version '${packageData.version}' found.`);
             console.log(`Creating release '${packageData.version}' ...`)
             const releaseBody = `Release of pre-built nexe binaries using nexe version: ${nexeVersion}`;
@@ -122,10 +124,16 @@ async function main() {
                 );
                 console.log('Release created.');
                 console.log(createResponse);
+                releaseId = createResponse.id;
             } else {
                 console.log('Skipping creating release due to --no-create-release flag.');
             }
-            console.log(`Build needed! Exiting with error code 10.`)
+
+            console.log(`Writing new release ID (${releaseId}) to file: RELEASE_ID`);
+            const releaseIdPath = path.join(__dirname, '../RELEASE_ID');
+            fs.writeFileSync(releaseIdPath, 'none');
+
+            console.log(`Build needed! Exiting with error code 10.`);
             process.exit(10);
         }
 
