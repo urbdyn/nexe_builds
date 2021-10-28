@@ -74,18 +74,19 @@ function main(){
       if [ "$os_env" = "linux" ]; then
         echo "Running: source /opt/rh/devtoolset-8/enable"
         source /opt/rh/devtoolset-8/enable
-      fi
-      export CC="$(which gcc)"
-      export CXX="$(which g++)"
-      echo "$CC --version = $($CC --version)"
-      echo "$CXX --version = $($CXX --version)"
+        
+        export CC="$(which gcc)"
+        export CXX="$(which g++)"
+        echo "$CC --version = $($CC --version)"
+        echo "$CXX --version = $($CXX --version)"
 
-      if command -v ccache &> /dev/null; then
-        echo "ccache detected!"
-        export CC="ccache $CC"
-        export CXX="ccache $CXX"
-        echo "CC=$CC"
-        echo "CXX=$CXX"
+        if command -v ccache &> /dev/null; then
+          echo "ccache detected!"
+          export CC="ccache $CC"
+          export CXX="ccache $CXX"
+          echo "CC=$CC"
+          echo "CXX=$CXX"
+        fi
       fi
 
       echo "Creating build directory ($build_dir) ..."
