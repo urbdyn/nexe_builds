@@ -36,9 +36,10 @@ if [ "$IN_DOCKER" != "true" ]; then
     docker build --tag nexe_build_centos_7 "$script_dir/"
     echo "Booting in docker container ..."
     docker run -it --rm \
-        -v "$repo_dir/:/nexe_build/" \
+        -v "$repo_dir/:/nexe_build/" -v "$HOME/.ccache/:/root/.ccache/" \
         --env IN_DOCKER=true --env CREATE_RELEASE --env NODE_VERSION --env GIT_COMMIT --env GITHUB_TOKEN \
         nexe_build_centos_7 /nexe_build/bin/run_cd
+        # -v "$HOME/.nexe/:/root/.nexe/" \
     exit 0
 else
     echo "Installing nvm ..."
