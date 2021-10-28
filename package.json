@@ -1,6 +1,6 @@
 {
   "name": "nexe_builds",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Cached nexe builds for public use",
   "main": "index.js",
   "scripts": {
