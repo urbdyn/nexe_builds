@@ -45,6 +45,9 @@ if [ "$os_env" = "linux" ]; then
             # -v "$HOME/.nexe/:/root/.nexe/" \
         docker cp "$repo_dir/package.json" "nexe_build_centos_7_container:/nexe_build/package.json"
         docker cp "$repo_dir/package-lock.json" "nexe_build_centos_7_container:/nexe_build/package-lock.json"
+        echo "Trying out basic container commands"
+        docker run --rm -it centos:7 ls /
+        docker run --rm -it centos:7 yum check-update || true
         echo "Starting docker container build ..."
         time docker start -ai nexe_build_centos_7_container 2>&1
         echo "Completed docker container build."
