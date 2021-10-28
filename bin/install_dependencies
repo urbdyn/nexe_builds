@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 script_dir="$repo_dir/bin"
 source "$script_dir/bash_utils.sh"
@@ -14,21 +16,11 @@ case "$os_env" in
         set +x
         ;;
     "linux")
-        echo "Installing Centos dependencies ..."
-        set -x
-        echo "Installing dependencies ..."
-        yum install -y which python3
-        yum install -y centos-release-scl
-        yum install -y devtoolset-8
-
-        echo "Enabling devtoolset-8 ..."
-        #scl enable devtoolset-8 -- bash
-        source /opt/rh/devtoolset-8/enable
-        set +x
+        echo "Dependencies installed via container (skipping)"
         ;;
     # Temporarily disabling as it was causing build to fail for unknown reasons
-    #"macos")
-    #    echo "Installing macos dependencies ..."
+    #"mac")
+    #    echo "Installing mac (darwin) dependencies ..."
     #    set -x
     #    brew install ccache
     #    set +x

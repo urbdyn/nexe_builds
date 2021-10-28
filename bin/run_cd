@@ -4,6 +4,8 @@ set -e
 
 repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 script_dir="$repo_dir/bin"
+source "$script_dir/bash_utils.sh"
+os_env="$(get_os_type)"
 
 if [ "$NODE_VERSION" = "" ]; then
     echo "Please set NODE_VERSION env. var."
@@ -24,41 +26,37 @@ if [ "$CREATE_RELEASE" = "false" ]; then
 fi
 
 echo "Getting commit hash ..."
-echo "GIT_COMMIT=$GIT_COMMIT"
 if [ "$GIT_COMMIT" = "" ]; then
     export GIT_COMMIT="$(git rev-parse HEAD)"
 fi
 echo "GIT_COMMIT=$GIT_COMMIT"
 echo ""
 
-if [ "$IN_DOCKER" != "true" ]; then
-    echo "Building docker container ..."
-    docker build --tag nexe_build_centos_7 "$script_dir/"
-    echo "Booting in docker container ..."
-    docker run -it --rm \
-        -v "$repo_dir/:/nexe_build/" -v "$HOME/.ccache/:/root/.ccache/" \
-        --env IN_DOCKER=true --env CREATE_RELEASE --env NODE_VERSION --env GIT_COMMIT --env GITHUB_TOKEN \
-        nexe_build_centos_7 /nexe_build/bin/run_cd
-        # -v "$HOME/.nexe/:/root/.nexe/" \
-    exit 0
-else
-    echo "Installing nvm ..."
-    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-
-    echo "Enabling nvm ..."
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-    echo "Installing desired version of node.js ..."
-    if [ "$NODE_VERSION" = "" ]; then
-        echo "ERROR! Env var NODE_VERSION is not set."
-        exit 1
+if [ "$os_env" = "linux" ]; then
+    if [ "$IN_DOCKER" != "true" ]; then
+        echo "Doing linux build in docker container ..."
+        docker build --tag nexe_build_centos_7 "$script_dir/"
+        echo "Creating container ..."
+        docker create -it --name nexe_build_centos_7_container \
+            -v "$repo_dir/bin/:/nexe_build/bin/" -v "$repo_dir/dist/:/nexe_build/dist/" -v "$HOME/.ccache/:/root/.ccache/" \
+            --env IN_DOCKER=true --env CREATE_RELEASE --env NODE_VERSION --env GIT_COMMIT --env GITHUB_TOKEN \
+            nexe_build_centos_7 /nexe_build/bin/run_cd ||  true
+            # -v "$HOME/.nexe/:/root/.nexe/" \
+        docker cp "$repo_dir/package.json" "nexe_build_centos_7_container:/nexe_build/package.json"
+        docker cp "$repo_dir/package-lock.json" "nexe_build_centos_7_container:/nexe_build/package-lock.json"
+        echo "Starting docker container build ..."
+        docker start -i nexe_build_centos_7_container
+        echo "Completed docker container build."
+        exit 0
+    else
+        echo "Installing desired version of node.js ..."
+        source ~/.bashrc
+        nvm install "$NODE_VERSION"
+        chown -R root:root ~/.nvm/
+        echo "Running: npm ci"
+        cd /nexe_build/
+        npm ci
     fi
-    nvm install "$NODE_VERSION"
-
-    cd /nexe_build/
-    npm ci
 fi
 
 echo "Running: bin/check_asset"
@@ -77,6 +75,7 @@ case "$exit_code" in
         $script_dir/install_dependencies || exit 2
         echo "Running: bin/build_nexe build $NODE_VERSION"
         $script_dir/build_nexe build "$NODE_VERSION" || exit 3
+        echo "Finished: bin/build_nexe build $NODE_VERSION"
         ;;
     *)
         echo "Error exit code detected ($exit_code) from check_asset script! Crashing."
