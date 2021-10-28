@@ -24,6 +24,7 @@ fi
 if [ "$CREATE_RELEASE" = "false" ]; then
     check_asset_flags="--no-create-release"
 fi
+echo "CREATE_RELEASE=$CREATE_RELEASE"
 
 echo "Getting commit hash ..."
 if [ "$GIT_COMMIT" = "" ]; then
@@ -45,7 +46,7 @@ if [ "$os_env" = "linux" ]; then
         docker cp "$repo_dir/package.json" "nexe_build_centos_7_container:/nexe_build/package.json"
         docker cp "$repo_dir/package-lock.json" "nexe_build_centos_7_container:/nexe_build/package-lock.json"
         echo "Starting docker container build ..."
-        docker start -i nexe_build_centos_7_container
+        docker start -ai nexe_build_centos_7_container
         echo "Completed docker container build."
         exit 0
     else
