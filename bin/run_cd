@@ -35,9 +35,6 @@ echo ""
 
 if [ "$os_env" = "linux" ]; then
     if [ "$IN_DOCKER" != "true" ]; then
-        echo "Trying out basic container commands"
-        docker run --rm -t centos:7 ls /
-
         echo "Doing linux build in docker container ..."
         docker build --tag nexe_build_centos_7 "$script_dir/"
         echo "Creating container ..."
@@ -49,7 +46,7 @@ if [ "$os_env" = "linux" ]; then
         docker cp "$repo_dir/package.json" "nexe_build_centos_7_container:/nexe_build/package.json"
         docker cp "$repo_dir/package-lock.json" "nexe_build_centos_7_container:/nexe_build/package-lock.json"
         echo "Starting docker container build ..."
-        time docker start -a nexe_build_centos_7_container 2>&1
+        time docker start -a nexe_build_centos_7_container
         echo "Completed docker container build."
         echo "Copying out files ..."
         docker cp "nexe_build_centos_7_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME" 
