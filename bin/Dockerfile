@@ -1,0 +1,5 @@
+FROM centos:7
+
+RUN yum install -y which python3 && \
+    yum install -y centos-release-scl && \
+    yum install -y devtoolset-8

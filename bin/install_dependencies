@@ -14,9 +14,16 @@ case "$os_env" in
         set +x
         ;;
     "linux")
-        echo "Installing Ubuntu dependencies ..."
+        echo "Installing Centos dependencies ..."
         set -x
-        sudo apt-get install -y ccache
+        echo "Installing dependencies ..."
+        yum install -y which python3
+        yum install -y centos-release-scl
+        yum install -y devtoolset-8
+
+        echo "Enabling devtoolset-8 ..."
+        #scl enable devtoolset-8 -- bash
+        source /opt/rh/devtoolset-8/enable
         set +x
         ;;
     # Temporarily disabling as it was causing build to fail for unknown reasons

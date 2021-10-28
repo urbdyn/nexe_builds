@@ -12,14 +12,53 @@ else
     echo "NODE_VERSION=$NODE_VERSION"
 fi
 
+if [ "$GITHUB_TOKEN" = "" ]; then
+    echo "Please set GITHUB_TOKEN env. var."
+    exit 1
+else
+    echo "GITHUB_TOKEN found"
+fi
+
 if [ "$CREATE_RELEASE" = "false" ]; then
     check_asset_flags="--no-create-release"
 fi
 
 echo "Getting commit hash ..."
-GIT_COMMIT="$(git rev-parse HEAD)"
+echo "GIT_COMMIT=$GIT_COMMIT"
+if [ "$GIT_COMMIT" = "" ]; then
+    export GIT_COMMIT="$(git rev-parse HEAD)"
+fi
 echo "GIT_COMMIT=$GIT_COMMIT"
 echo ""
+
+if [ "$IN_DOCKER" != "true" ]; then
+    echo "Building docker container ..."
+    docker build --tag nexe_build_centos_7 "$script_dir/"
+    echo "Booting in docker container ..."
+    docker run -it --rm \
+        -v "$repo_dir/:/nexe_build/" \
+        --env IN_DOCKER=true --env CREATE_RELEASE --env NODE_VERSION --env GIT_COMMIT --env GITHUB_TOKEN \
+        nexe_build_centos_7 /nexe_build/bin/run_cd
+    exit 0
+else
+    echo "Installing nvm ..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+    echo "Enabling nvm ..."
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+    echo "Installing desired version of node.js ..."
+    if [ "$NODE_VERSION" = "" ]; then
+        echo "ERROR! Env var NODE_VERSION is not set."
+        exit 1
+    fi
+    nvm install "$NODE_VERSION"
+
+    cd /nexe_build/
+    npm ci
+fi
 
 echo "Running: bin/check_asset"
 set +e
