@@ -36,6 +36,9 @@ jobs:
           key: ${{ matrix.os }}
 
       - run: npm ci
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: matrix.os == 'macos-latest' && matrix.node_version == '16.13.0'
       - name: Run nexe CD build
         id: run_cd
         run: |
