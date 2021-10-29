@@ -8,7 +8,7 @@ source "$script_dir/bash_utils.sh"
 os_env="$(get_os_type)"
 
 node_target="$2"
-if [ "$os_env" = "mac" ]; then
+if [ "$os_env" = "macos" ]; then
   os_arch="$(uname -m)"
 else
   os_arch="$(arch)"
@@ -74,7 +74,7 @@ function main(){
       if [ "$os_env" = "linux" ]; then
         echo "Running: source /opt/rh/devtoolset-8/enable"
         source /opt/rh/devtoolset-8/enable
-        
+
         export CC="$(which gcc)"
         export CXX="$(which g++)"
         echo "$CC --version = $($CC --version)"

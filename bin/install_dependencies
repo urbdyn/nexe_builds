@@ -18,14 +18,13 @@ case "$os_env" in
     "linux")
         echo "Dependencies installed via container (skipping)"
         ;;
-    "mac")
-        echo "Installing mac (darwin) dependencies ..."
-        set -x
-        xcode-select --install || true
-        # Temporarily disabling as it was causing build to fail for unknown reasons
-        #brew install ccache
-        set +x
-        ;;
+    # Temporarily disabling as it was causing build to fail for unknown reasons
+    #"macos")
+    #    echo "Installing macos dependencies ..."
+    #    set -x
+    #    brew install ccache
+    #    set +x
+    #    ;;
     *)
         echo "No dependencies to install for '$os_env'"
         ;;

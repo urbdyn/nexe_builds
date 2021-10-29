@@ -9,7 +9,7 @@ function get_os_type() {
       echo "linux"
       ;;
     "darwin"*)
-      echo "mac"
+      echo "macos"
       ;;
     "cygwin"|"win32"|"msys")
       echo "windows"

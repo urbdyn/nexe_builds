@@ -19,7 +19,7 @@ const os = require('os');
 const assert = require('assert');
 
 const osNameMap = {
-    'darwin': 'mac',
+    'darwin': 'macos',
     'linux': 'linux',
     'win32': 'windows',
 };
