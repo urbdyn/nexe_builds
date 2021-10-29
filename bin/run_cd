@@ -49,8 +49,8 @@ if [ "$os_env" = "linux" ]; then
         time docker start -a nexe_build_centos_7_container
         echo "Completed docker container build."
         echo "Copying out files ..."
-        docker cp "nexe_build_centos_7_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME" 
-        docker cp "nexe_build_centos_7_container:/nexe_build/RELEASE_ID" "$repo_dir/RELEASE_ID" 
+        docker cp "nexe_build_centos_7_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME"
+        docker cp "nexe_build_centos_7_container:/nexe_build/RELEASE_ID" "$repo_dir/RELEASE_ID"
         exit 0
     else
         echo "Installing desired version of node.js ..."
