@@ -12,14 +12,13 @@ jobs:
   build_and_publish:
     name: Build nexe
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
+    timeout-minutes: 180
     defaults:
       run:
         shell: bash
     strategy:
       matrix:
-        #os: [ubuntu-latest, windows-latest, macos-latest]
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         #node_version: ['12.21.0', '12.22.6', '14.16.0', '14.18.0', '14.18.1', '16.11.0', '16.13.0']
         node_version: ['14.16.0', '14.18.0', '14.18.1', '16.11.0', '16.13.0']
 
