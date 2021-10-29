@@ -43,6 +43,7 @@ jobs:
       - name: Run nexe CD build
         id: run_cd
         run: |
+          echo "github.ref = ${{ github.ref }}"
           ./bin/run_cd
           echo "Creating dist/ dir if it doesn't exist ..."
           mkdir -p dist/
@@ -67,7 +68,7 @@ jobs:
         env:
           NODE_VERSION: ${{ matrix.node_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CREATE_RELEASE: "${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}"
+          CREATE_RELEASE: "${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}"
 
       # Upload artifact & asset
       - name: Upload build artifact
@@ -78,7 +79,7 @@ jobs:
           path: dist/${{ steps.run_cd.outputs.release_file }}
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
-        if: steps.run_cd.outputs.build_occurred == 'true'
+        if: steps.run_cd.outputs.build_occurred == 'true' && github.ref == 'refs/heads/main'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
