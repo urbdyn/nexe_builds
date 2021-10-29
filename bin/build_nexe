@@ -71,10 +71,22 @@ function main(){
         echo "No existing build detected. Compiling now."
       fi
 
-      if command -v ccache &> /dev/null; then
-        echo "ccache detected!"
-        export CC="ccache gcc"
-        export CXX="ccache g++"
+      if [ "$os_env" = "linux" ]; then
+        echo "Running: source /opt/rh/devtoolset-8/enable"
+        source /opt/rh/devtoolset-8/enable
+
+        export CC="$(which gcc)"
+        export CXX="$(which g++)"
+        echo "$CC --version = $($CC --version)"
+        echo "$CXX --version = $($CXX --version)"
+
+        if command -v ccache &> /dev/null; then
+          echo "ccache detected!"
+          export CC="ccache $CC"
+          export CXX="ccache $CXX"
+          echo "CC=$CC"
+          echo "CXX=$CXX"
+        fi
       fi
 
       echo "Creating build directory ($build_dir) ..."
@@ -89,13 +101,28 @@ function main(){
           ;;
       esac
 
-      nexe_cmd="nexe --build --verbose --no-mange --target='$nexe_target' --make=-j$cpu_core_count"
-      nexe_cmd="$nexe_cmd -o $nexe_no_mangle_path '$repo_dir/index.js'"
+      python2_path="$(which python2)"
+      python3_path="$(which python3)"
+      echo "python2_path=$python2_path"
+      echo "python3_path=$python3_path"
+      nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=-j$cpu_core_count"
+      nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
 
-      echo "console.log()" > "$repo_dir/index.js"
-      echo "Building $nexe_no_mangle_name"
+      echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
+      echo "Building $nexe_no_mangle_name (python 3)"
+      nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
       echo "  $nexe_cmd"
-      time npx $nexe_cmd
+      set +e
+      time npx $nexe_cmd || build_failed="true"
+      set -e
+      if [ "$build_failed" = "true" ]; then
+        echo "Trying fallback to python2 ..."
+        echo "Building $nexe_no_mangle_name (python 2)"
+        nexe_cmd="$nexe_part_1_cmd --python=$python2_path $nexe_part_3_cmd"
+        echo "  $nexe_cmd"
+        time npx $nexe_cmd
+      fi
+      echo "Build finished."
       rm "$repo_dir/index.js"
       # Not compressing right now because nexe currently doesn't support downloading
       # compressed prebuilt binaries.
