@@ -124,7 +124,7 @@ async function main() {
                 );
                 console.log('Release created.');
                 console.log(createResponse);
-                releaseId = createResponse.id;
+                releaseId = createResponse.data.id;
             } else {
                 console.log('Skipping creating release due to --no-create-release flag.');
             }

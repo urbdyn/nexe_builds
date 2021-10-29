@@ -21,7 +21,9 @@ else
     echo "GITHUB_TOKEN found"
 fi
 
-if [ "$CREATE_RELEASE" = "false" ]; then
+if [ "$CREATE_RELEASE" = "true" ]; then
+    check_asset_flags=""
+else
     check_asset_flags="--no-create-release"
 fi
 echo "CREATE_RELEASE=$CREATE_RELEASE"

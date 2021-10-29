@@ -3,11 +3,13 @@ name: CI for nexe builds
 on:
   pull_request:
     branches: [main]
+  push:
+    branches: [main]
 
 jobs:
 
   # Create nexe build for later use
-  build:
+  build_and_publish:
     name: Build nexe
     runs-on: ${{ matrix.os }}
     timeout-minutes: 120
@@ -65,7 +67,7 @@ jobs:
         env:
           NODE_VERSION: ${{ matrix.node_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CREATE_RELEASE: 'false'
+          CREATE_RELEASE: "${{ github.ref == 'refs/heads/master' && 'true' || 'false' }}"
 
       # Upload artifact & asset
       - name: Upload build artifact
@@ -74,3 +76,13 @@ jobs:
         with:
           name: ${{ steps.run_cd.outputs.release_name }}
           path: dist/${{ steps.run_cd.outputs.release_file }}
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        if: steps.run_cd.outputs.build_occurred == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: https://uploads.github.com/repos/urbdyn/nexe_builds/releases/${{ steps.run_cd.outputs.release_id }}/assets{?name,label}
+          asset_name: ${{ steps.run_cd.outputs.release_name }}
+          asset_path: dist/${{ steps.run_cd.outputs.release_file }}
+          asset_content_type: application/octet-stream
