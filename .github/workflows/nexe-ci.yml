@@ -78,7 +78,7 @@ jobs:
           path: dist/${{ steps.run_cd.outputs.release_file }}
       - name: Upload Release Asset
         uses: actions/upload-release-asset@v1
-        if: steps.run_cd.outputs.build_occurred == 'true'
+        if: steps.run_cd.outputs.build_occurred == 'true' && github.ref == 'refs/heads/master'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
