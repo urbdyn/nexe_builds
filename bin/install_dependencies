@@ -19,7 +19,7 @@ case "$os_env" in
         echo "Dependencies installed via container (skipping)"
         ;;
     # Temporarily disabling as it was causing build to fail for unknown reasons
-    #"macos")
+    #"mac")
     #    echo "Installing macos dependencies ..."
     #    set -x
     #    brew install ccache

@@ -8,7 +8,7 @@ source "$script_dir/bash_utils.sh"
 os_env="$(get_os_type)"
 
 node_target="$2"
-if [ "$os_env" = "macos" ]; then
+if [ "$os_env" = "mac" ]; then
   os_arch="$(uname -m)"
 else
   os_arch="$(arch)"
@@ -96,7 +96,7 @@ function main(){
         "linux"|"windows")
           cpu_core_count="$(nproc)"
           ;;
-        "macos")
+        "mac")
           cpu_core_count="$(sysctl -n hw.ncpu)"
           ;;
       esac
