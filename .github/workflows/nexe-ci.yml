@@ -28,7 +28,7 @@ jobs:
         id: get_node_details
         run: echo "::set-output name=version::$(cat .nvmrc)"
       - name: Use Node.js from .nvmrc
-        uses: actions/setup-node@v2.4.1
+        uses: actions/setup-node@v2.5.0
         with:
           node-version: ${{ steps.get_node_details.outputs.version }}
       - name: Declare caches for build
