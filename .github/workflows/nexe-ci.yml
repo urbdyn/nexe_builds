@@ -69,7 +69,7 @@ jobs:
 
       # Upload artifact & asset
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         if: steps.run_cd.outputs.build_occurred == 'true'
         with:
           name: ${{ steps.run_cd.outputs.release_name }}
