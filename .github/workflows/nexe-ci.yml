@@ -30,7 +30,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: Declare caches for build
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.ccache/
