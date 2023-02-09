@@ -4,14 +4,15 @@
 
 * Created on: 2023-02-09
 * Nexe version: 4.0.0-rc.2
-* Set Linux build to run in Centos7 container and thus require GLIBC version 2.17 instead of 2.25 that is currently in Linux runner.
+* Set Linux build to run in version pinned `ghcr.io/urbdyn/centos7-devtoolset8-builder` container which has preinstalled version of `devtoolset-8` package.
+* Set Linux build to use Node.js version as defined in `.nvmrc` file.
 * Build matrix:
   * OS: `linux`, `macos`, `windows`
   * Node Version: `14.16.0`, `14.18.0`, `14.18.1`, `16.11.0`, `16.13.0`, `16.13.1`, `16.19.0`
 
 ## 0.2.0
 
-**DEPRECATED: No known issues but no longer supported.**
+**DEPRECATED 2023-02-09: No known issues but no longer supported.**
 
 * Created on: 2021-10-29
 * Nexe version: 4.0.0-beta.19
