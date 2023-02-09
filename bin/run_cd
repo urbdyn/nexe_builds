@@ -58,8 +58,12 @@ if [ "$os_env" = "linux" ]; then
     else
         echo "Installing desired version of node.js ..."
         source ~/.bashrc
-        cd "$repo_dir"
-        nvm use .
+        cd /nexe_build/
+        echo "  in directory '$(pwd)' with files:"
+        ls
+        echo ".nvmrc = $(cat .nvmrc)"
+        nvm install --no-progress
+        nvm use
         chown -R root:root ~/.nvm/
         echo "Running: npm ci"
         cd /nexe_build/
