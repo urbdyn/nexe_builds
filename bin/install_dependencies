@@ -12,6 +12,8 @@ case "$os_env" in
     "windows")
         echo "Installing windows dependencies ..."
         set -x
+        # TODO: Install Python2 such that the Node.js build system can detect it
+        # on Windows Server 2022.
         choco install nasm
         set +x
         ;;
