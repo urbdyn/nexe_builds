@@ -105,3 +105,4 @@ https://github.com/nodejs/node/blob/main/BUILDING.md
 https://github.com/dotnet/runtime/issues/41133
 https://github.com/openssl/openssl/issues/12254
 https://embeddedartistry.com/blog/2017/10/11/demystifying-arm-floating-point-compiler-options/
+https://github.com/nodejs/gyp-next/pull/78
