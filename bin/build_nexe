@@ -111,7 +111,7 @@ function main(){
       echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
       nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=DESTCPU=$target_arch --make=-j$cpu_core_count --make=CFLAGS=-mfloat-abi=hard"
-      nexe_part_2_cmd="--configure=--openssl-no-asm --configure=--without-snapshot --configure=--without-inspector --configure=--without-intl"
+      nexe_part_2_cmd="--configure=--openssl-no-asm --configure=--without-snapshot --configure=--without-inspector --configure=--without-intl --configure=--with-arm-float-abi=softfp"
       if [ "$target_arch" != "$os_arch"] ; then
         nexe_part_2_cmd="$nexe_part_2_cmd --configure=--cross-compiling"
       fi
@@ -119,7 +119,7 @@ function main(){
 
       echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.arch() =', os.arch()); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
       echo "Building $nexe_no_mangle_name (python 3)"
-      export CFLAGS="-mfloat-abi=hard"
+      #export CFLAGS="-mfloat-abi=hard"
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_2_cmd $nexe_part_3_cmd"
       echo "  $nexe_cmd"
       set +e
