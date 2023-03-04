@@ -12,6 +12,7 @@ if [ "$NODE_VERSION" = "" ]; then
     exit 1
 else
     echo "NODE_VERSION=$NODE_VERSION"
+    echo "NODE_ARCH=$NODE_ARCH"
 fi
 
 if [ "$GITHUB_TOKEN" = "" ]; then
@@ -82,7 +83,7 @@ case "$exit_code" in
         echo "Running: bin/install_dependencies"
         $script_dir/install_dependencies || exit 2
         echo "Running: bin/build_nexe build $NODE_VERSION"
-        $script_dir/build_nexe build "$NODE_VERSION" || exit 3
+        $script_dir/build_nexe build "$NODE_VERSION" "$NODE_ARCH" || exit 3
         echo "Finished: bin/build_nexe build $NODE_VERSION"
         ;;
     *)

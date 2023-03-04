@@ -82,6 +82,7 @@ Enjoy 🚀
     1. Args:
         1. Command (`build` or `build-check`)
         2. Node.js version to build for.
+        3. OS arch to build, options: `x64`, `arm64`. (optional)
     2. Environmental Variables: None
     3. Files created:
         1. Nexe build artifact (`$repo_dir/dist/$os_env-$os_arch-$node_target`)
