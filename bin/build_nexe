@@ -119,7 +119,10 @@ function main(){
 
       echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.arch() =', os.arch()); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
       echo "Building $nexe_no_mangle_name (python 3)"
-      NEON64_CFLAGS="-mfloat-abi=hard"
+
+      export NEON32_CFLAGS="-march=armv7-a -mfloat-abi=hard -mfpu=neon"
+      export NEON64_CFLAGS="-march=armv8-a -mfloat-abi=hard"
+
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_2_cmd $nexe_part_3_cmd"
       echo "  $nexe_cmd"
       set +e
