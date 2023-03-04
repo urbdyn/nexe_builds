@@ -7,6 +7,7 @@ script_dir="$repo_dir/bin"
 source "$script_dir/bash_utils.sh"
 os_env="$(get_os_type)"
 
+NODE_ARCH="${NODE_ARCH:-x64}"
 if [ "$NODE_VERSION" = "" ]; then
     echo "Please set NODE_VERSION env. var."
     exit 1
@@ -70,7 +71,7 @@ fi
 
 echo "Running: bin/check_asset"
 set +e
-$script_dir/check_asset "$NODE_VERSION" "$GIT_COMMIT" $check_asset_flags
+$script_dir/check_asset "$NODE_VERSION" "$GIT_COMMIT" "$NODE_ARCH" $check_asset_flags
 exit_code="$?"
 set -e
 

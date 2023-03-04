@@ -24,10 +24,10 @@ const osNameMap = {
     'win32': 'windows',
 };
 const archNameMap = {
+    'arm64': 'arm64',
     'x64': 'x64',
     'x32': 'x86',
 };
-const osArch = os.arch();
 
 async function main() {
     try {
@@ -42,8 +42,12 @@ async function main() {
             console.log("Please provide target repo commit for release as second arg (use `git rev-parse HEAD`)");
             process.exit(1);
         }
-        if (myArgs.length === 3) {
-            assert(myArgs[2] === '--no-create-release', `Invalid flag given: ${myArgs[2]}`);
+        if (myArgs.length === 2) {
+            console.log("Please provide target OS for release as third arg (options: x64, arm64)");
+            process.exit(1);
+        }
+        if (myArgs.length === 4) {
+            assert(myArgs[3] === '--no-create-release', `Invalid flag given: ${myArgs[3]}`);
             doCreate = false;
         }
         const apiToken = process.env.GITHUB_TOKEN;
@@ -51,12 +55,14 @@ async function main() {
             console.log("Please provide github API token via env. var. GITHUB_TOKEN");
             process.exit(1);
         }
+        const targetNodeVersion = myArgs[0];
+        const releaseCommitish = myArgs[1];
+        const osArch = myArgs[2];
         assert(Object.keys(osNameMap).includes(process.platform), `Unsupported platform: ${process.platform}`);
         assert(Object.keys(archNameMap).includes(osArch), `Unsupported architecture: ${osArch}`);
         const targetOs = osNameMap[process.platform];
         const targetArch = archNameMap[osArch];
-        const targetNodeVersion = myArgs[0];
-        const releaseCommitish = myArgs[1];
+
         const nexeAssetName = `${targetOs}-${targetArch}-${targetNodeVersion}`;
         const packageData = getPackgeData();
         const nexeVersion = packageData.dependencies.nexe.replace('^','');
