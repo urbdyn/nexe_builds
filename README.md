@@ -89,3 +89,18 @@ Enjoy 🚀
     4. Exit codes:
         1. `0`: Success
         2. `*`: Failure
+
+# TMP
+
+https://github.com/nodejs/node/issues/40350
+https://github.com/nodejs/node-v0.x-archive/issues/5195
+https://github.com/nodejs/node/issues/37309
+https://github.com/sjitech/build-nodejs-for-android
+https://github.com/briansmith/ring/issues/1442
+https://github.com/nodejs/node/issues/37441
+https://github.com/nodejs/node/issues/40302
+https://github.com/nodejs/build/issues/2474
+https://github.com/eclipse-openj9/openj9/issues/5018
+https://github.com/nodejs/node/blob/main/BUILDING.md
+https://github.com/dotnet/runtime/issues/41133
+https://github.com/openssl/openssl/issues/12254
