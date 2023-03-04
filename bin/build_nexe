@@ -111,10 +111,10 @@ function main(){
       echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
       nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=DESTCPU=$target_arch --make=-j$cpu_core_count"
-      nexe_part_2_cmd="--configure=--openssl-no-asm --configure=--without-snapshot --configure=--without-inspector --configure=--without-intl --configure=--with-arm-fpu=neon --configure=--with-arm-float-abi=hard"
-      if [ "$target_arch" != "$os_arch"] ; then
-        nexe_part_2_cmd="$nexe_part_2_cmd --configure=--cross-compiling"
-      fi
+      nexe_part_2_cmd="--configure=--openssl-no-asm --configure=--without-snapshot --configure=--without-inspector --configure=--without-intl --configure=--with-arm-fpu=neon --configure=--with-arm-float-abi=hard --configure=--cross-compiling"
+      # if [ "$target_arch" != "$os_arch"] ; then
+      #   nexe_part_2_cmd="$nexe_part_2_cmd --configure=--cross-compiling"
+      # fi
       nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
 
       echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.arch() =', os.arch()); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
