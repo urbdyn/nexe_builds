@@ -7,11 +7,13 @@ script_dir="$repo_dir/bin"
 source "$script_dir/bash_utils.sh"
 os_env="$(get_os_type)"
 
+NODE_ARCH="${NODE_ARCH:-x64}"
 if [ "$NODE_VERSION" = "" ]; then
     echo "Please set NODE_VERSION env. var."
     exit 1
 else
     echo "NODE_VERSION=$NODE_VERSION"
+    echo "NODE_ARCH=$NODE_ARCH"
 fi
 
 if [ "$GITHUB_TOKEN" = "" ]; then
@@ -69,7 +71,7 @@ fi
 
 echo "Running: bin/check_asset"
 set +e
-$script_dir/check_asset "$NODE_VERSION" "$GIT_COMMIT" $check_asset_flags
+$script_dir/check_asset "$NODE_VERSION" "$GIT_COMMIT" "$NODE_ARCH" $check_asset_flags
 exit_code="$?"
 set -e
 
@@ -81,9 +83,9 @@ case "$exit_code" in
     "10")
         echo "Running: bin/install_dependencies"
         $script_dir/install_dependencies || exit 2
-        echo "Running: bin/build_nexe build $NODE_VERSION"
-        $script_dir/build_nexe build "$NODE_VERSION" || exit 3
-        echo "Finished: bin/build_nexe build $NODE_VERSION"
+        echo "Running: bin/build_nexe build $NODE_VERSION $NODE_ARCH"
+        $script_dir/build_nexe build "$NODE_VERSION" "$NODE_ARCH" || exit 3
+        echo "Finished: bin/build_nexe build $NODE_VERSION $NODE_ARCH"
         ;;
     *)
         echo "Error exit code detected ($exit_code) from check_asset script! Crashing."

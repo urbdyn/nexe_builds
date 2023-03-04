@@ -8,19 +8,24 @@ source "$script_dir/bash_utils.sh"
 os_env="$(get_os_type)"
 
 node_target="$2"
-if [ "$os_env" = "mac" ]; then
-  os_arch="$(uname -m)"
-else
-  os_arch="$(arch)"
+target_arch="$3"
+os_arch=""
+if [ "$os_arch" = "" ]; then
+  if [ "$os_env" = "mac" ]; then
+    os_arch="$(uname -m)"
+  else
+    os_arch="$(arch)"
+  fi
+  if [ "$os_arch" = "x86_64" ]; then
+    os_arch="x64"
+  fi
 fi
-if [ "$os_arch" = "x86_64" ]; then
-  os_arch="x64"
-fi
-if [ "$os_arch" != "x64" ]; then
-  echo "Error! Unsupported architecture: $os_arch"
+# Validate OS arch
+if [ "$target_arch" != "x64" ] && [ "$target_arch" != "arm64" ]; then
+  echo "Error! Unsupported architecture: $target_arch"
   exit 1
 fi
-nexe_target="${os_arch}-$node_target"
+nexe_target="$target_arch-$node_target"
 
 help_text="
 build_nexe 
@@ -101,16 +106,24 @@ function main(){
           ;;
       esac
 
-      python2_path="$(which python2)"
-      python3_path="$(which python3)"
+      python2_path="$(command -v python2 || true)"
+      python3_path="$(command -v python3)"
       echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
-      nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=-j$cpu_core_count"
+      nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=DESTCPU=$target_arch --make=-j$cpu_core_count"
+      nexe_part_2_cmd="--configure=--openssl-no-asm --configure=--without-snapshot --configure=--without-inspector --configure=--without-intl --configure=--with-arm-fpu=neon --configure=--with-arm-float-abi=hard --configure=--cross-compiling"
+      # if [ "$target_arch" != "$os_arch"] ; then
+      #   nexe_part_2_cmd="$nexe_part_2_cmd --configure=--cross-compiling"
+      # fi
       nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
 
-      echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
+      echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.arch() =', os.arch()); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
       echo "Building $nexe_no_mangle_name (python 3)"
-      nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
+
+      export NEON32_CFLAGS="-march=armv7-a -mfloat-abi=hard -mfpu=neon"
+      export NEON64_CFLAGS="-march=armv8-a -mfloat-abi=hard"
+
+      nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_2_cmd $nexe_part_3_cmd"
       echo "  $nexe_cmd"
       set +e
       time npx $nexe_cmd || build_failed="true"

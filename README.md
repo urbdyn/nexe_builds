@@ -82,9 +82,27 @@ Enjoy 🚀
     1. Args:
         1. Command (`build` or `build-check`)
         2. Node.js version to build for.
+        3. OS arch to build, options: `x64`, `arm64`. (optional)
     2. Environmental Variables: None
     3. Files created:
         1. Nexe build artifact (`$repo_dir/dist/$os_env-$os_arch-$node_target`)
     4. Exit codes:
         1. `0`: Success
         2. `*`: Failure
+
+# TMP
+
+https://github.com/nodejs/node/issues/40350
+https://github.com/nodejs/node-v0.x-archive/issues/5195
+https://github.com/nodejs/node/issues/37309
+https://github.com/sjitech/build-nodejs-for-android
+https://github.com/briansmith/ring/issues/1442
+https://github.com/nodejs/node/issues/37441
+https://github.com/nodejs/node/issues/40302
+https://github.com/nodejs/build/issues/2474
+https://github.com/eclipse-openj9/openj9/issues/5018
+https://github.com/nodejs/node/blob/main/BUILDING.md
+https://github.com/dotnet/runtime/issues/41133
+https://github.com/openssl/openssl/issues/12254
+https://embeddedartistry.com/blog/2017/10/11/demystifying-arm-floating-point-compiler-options/
+https://github.com/nodejs/gyp-next/pull/78
