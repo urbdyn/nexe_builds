@@ -20,7 +20,7 @@ if [ "$os_arch" = "" ]; then
   fi
 fi
 # Validate OS arch
-if [ "$os_arch" != "x64" && "$os_arch" != "arm64" ]; then
+if [ "$os_arch" != "x64" ] && [ "$os_arch" != "arm64" ]; then
   echo "Error! Unsupported architecture: $os_arch"
   exit 1
 fi
@@ -105,7 +105,9 @@ function main(){
           ;;
       esac
 
-      python2_path="$(which python2)"
+      echo "TEST 1"
+
+      #python2_path="$(which python2)"
       python3_path="$(which python3)"
       echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
