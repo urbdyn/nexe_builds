@@ -105,7 +105,7 @@ function main(){
       python3_path="$(which python3)"
       echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
-      nexe_part_1_cmd="nexe --build --verbose --no-mange --target=$nexe_target --make=-j$cpu_core_count"
+      nexe_part_1_cmd="nexe --build --verbose --no-mangle --target=$nexe_target --make=-j$cpu_core_count"
       nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
 
       echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
