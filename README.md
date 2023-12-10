@@ -1,6 +1,6 @@
 # Nexe Builds
 
-> Current version `0.4.0`. Current remote URL: `https://github.com/microcodez/nexe_builds/releases/download/0.3.0/`
+> Current version `0.4.0`. Current remote URL: `https://github.com/microcodez/nexe_builds/releases/download/0.4.0/`
 
 [Nexe] is a fantastic tool for turning Node.js applications into single binaries.
 This repository provides automation to pre-build and distribute the node binaries, so you don't have to!
