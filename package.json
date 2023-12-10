@@ -1,6 +1,6 @@
 {
   "name": "nexe_builds",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cached nexe builds for public use",
   "main": "index.js",
   "scripts": {
@@ -9,19 +9,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/urbdyn/nexe_builds.git"
+    "url": "git+https://github.com/microcodez/nexe_builds.git"
   },
   "keywords": [
     "nexe",
     "nodejs",
     "cached"
   ],
-  "author": "Urban Dynamics <www.urbdyn.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/urbdyn/nexe_builds/issues"
+    "url": "https://github.com/microcodez/nexe_builds/issues"
   },
-  "homepage": "https://github.com/urbdyn/nexe_builds#readme",
+  "homepage": "https://github.com/microcodez/nexe_builds#readme",
   "dependencies": {
     "@octokit/request": "^6.2.3",
     "nexe": "^4.0.0-rc.2"
