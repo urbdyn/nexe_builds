@@ -18,15 +18,19 @@ case "$os_env" in
         set +x
         ;;
     "linux")
-        echo "Dependencies installed via container (skipping)"
+        echo "Installing Linux latest dependencies ..."
+        set -x
+        sudo apt -qq update
+        sudo apt -y -qq install ccache g++ make curl
+        set +x
         ;;
-    # Temporarily disabling as it was causing build to fail for unknown reasons
-    #"mac")
-    #    echo "Installing macos dependencies ..."
-    #    set -x
-    #    brew install ccache
-    #    set +x
-    #    ;;
+    "mac")
+        # echo "Installing macos dependencies ..."
+        echo "No dpendencies to install for macos"
+        # set -x
+        # brew install ccache
+        # set +x
+       ;;
     *)
         echo "No dependencies to install for '$os_env'"
         ;;
