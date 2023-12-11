@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# set -e
+set -e
 
 repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 script_dir="$repo_dir/bin"
@@ -112,9 +112,9 @@ function main(){
       echo "Building $nexe_no_mangle_name (python 3)"
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
       echo "  $nexe_cmd"
-      # set +e
+      set +e
       time npx $nexe_cmd || build_failed="true"
-      # set -e
+      set -e
       if [ "$build_failed" = "true" ]; then
         echo "Trying fallback to python2 ..."
         echo "Building $nexe_no_mangle_name (python 2)"
@@ -137,6 +137,6 @@ function main(){
   esac
 }
 
-# set +e
+set +e
 
 main $@

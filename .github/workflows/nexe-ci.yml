@@ -36,7 +36,9 @@ jobs:
           path: |
             ~/.ccache/
           key: ${{ matrix.os }}-${{ matrix.node_version }}
-
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
       - run: npm ci
       - name: Run nexe CD build
         id: run_cd
