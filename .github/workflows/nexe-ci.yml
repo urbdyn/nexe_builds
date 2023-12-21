@@ -21,7 +21,7 @@ jobs:
         # TODO: Bump to windows-latest once it can be solved how to install Python2
         # such that the Node.js build system can detect it.
         os: [ubuntu-latest, windows-2019, macos-latest]
-        node_version: ['14.16.0', '14.18.0', '14.18.1', '16.11.0', '16.13.0', '16.13.1', '16.19.0', '18.14.0']
+        node_version: ['14.16.0', '14.18.0', '14.18.1', '16.11.0', '16.13.0', '16.13.1', '16.19.0', '18.14.0', '18.19.0']
 
     steps:
       - uses: actions/checkout@v3
