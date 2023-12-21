@@ -20,13 +20,17 @@ case "$os_env" in
     "linux")
         echo "Dependencies installed via container (skipping)"
         ;;
-    # Temporarily disabling as it was causing build to fail for unknown reasons
-    #"mac")
-    #    echo "Installing macos dependencies ..."
-    #    set -x
-    #    brew install ccache
-    #    set +x
-    #    ;;
+    "mac")
+        echo "Installing macos dependencies ..."
+        set -x
+        # Temporarily disabling as it was causing build to fail for unknown reasons
+        #brew install ccache
+        brew install pyenv
+        pyenv install 2.7.18
+        export PATH="$(pyenv root)/shims:${PATH}"
+        which python2
+        set +x
+        ;;
     *)
         echo "No dependencies to install for '$os_env'"
         ;;
