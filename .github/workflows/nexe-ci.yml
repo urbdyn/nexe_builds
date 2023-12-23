@@ -21,7 +21,8 @@ jobs:
         # TODO: Bump to windows-latest once it can be solved how to install Python2
         # such that the Node.js build system can detect it.
         os: [ubuntu-latest, windows-2019, macos-latest]
-        node_version: ['20.10.0']
+        # node_version: ['20.10.0', '20.9.0']
+        node_version: ['20.9.0']
 
     steps:
       - uses: actions/checkout@v3
