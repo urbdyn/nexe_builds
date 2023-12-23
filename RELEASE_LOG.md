@@ -9,6 +9,7 @@
 * Build matrix:
   * OS: `linux`, `macos`, `windows`
   * Node Version: `20.10.0`
+  * Node Version: `20.9.0` (added on 24/12/2023)
 
 ## 0.3.0 and below
 
