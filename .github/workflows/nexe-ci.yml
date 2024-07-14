@@ -22,7 +22,7 @@ jobs:
         # such that the Node.js build system can detect it.
         os: [ubuntu-latest, windows-2019, macos-latest]
         # node_version: ['20.10.0', '20.9.0']
-        node_version: ['20.9.0']
+        node_version: ['20.15.1']
 
     steps:
       - uses: actions/checkout@v3
