@@ -2,6 +2,8 @@
 /RELEASE_ID
 /NEXE_ASSET_NAME
 /index.js
+/dist/
+/build/
 
 # Logs
 logs

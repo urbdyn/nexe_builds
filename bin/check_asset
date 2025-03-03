@@ -24,6 +24,7 @@ const osNameMap = {
     'win32': 'windows',
 };
 const archNameMap = {
+    'arm64': 'arm64',
     'x64': 'x64',
     'x32': 'x86',
 };

@@ -1,6 +1,6 @@
 {
   "name": "nexe_builds",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Cached nexe builds for public use",
   "main": "index.js",
   "scripts": {
@@ -24,6 +24,6 @@
   "homepage": "https://github.com/urbdyn/nexe_builds#readme",
   "dependencies": {
     "@octokit/request": "^6.2.3",
-    "nexe": "^4.0.0-rc.2"
+    "nexe": "^4.0.0-rc.6"
   }
 }
