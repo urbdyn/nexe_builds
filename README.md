@@ -65,8 +65,9 @@ Enjoy 🚀
     2. Environmental Variables:
         1. `GITHUB_TOKEN`: Token to use for querying github and creating release if needed. [required]
     3. Files created:
-        1. `$repo_base/NEXE_ASSET_NAME`: Name of the nexe asset to create. (integer)
-        2. `$repo_base/RELEASE_ID`: The ID of the Github Release to publish assets to. (`${targetOs}-${targetArch}-${targetNodeVersion}`)
+        1. `$repo_base/NEXE_ASSET_NAME`: Name of the nexe asset to create. (`${targetOs}-${targetArch}-${targetNodeVersion}`)
+        2. `$repo_base/RELEASE_TAG`: The tag of the Github Release to publish assets to. (sem-ver string)
+        3. `$repo_base/RELEASE_ID`: The ID of the Github Release to publish assets to. (integer)
     4. Exit codes:
         1. `0`: Build not needed
         2. `1`: Error occurred

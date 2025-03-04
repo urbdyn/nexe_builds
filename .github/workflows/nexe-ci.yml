@@ -45,49 +45,53 @@ jobs:
           python-version: '3.10'
 
       - name: Run nexe CD build
-        id: run_cd
         run: |
           echo "github.ref = ${{ github.ref }}"
           ./bin/run_cd
+        env:
+          NODE_VERSION: ${{ matrix.node_version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CREATE_RELEASE: "${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}"
+
+      - name: Get nexe build info
+        id: build_info
+        run: |
+          echo "github.ref = ${{ github.ref }}"
           echo "Creating dist/ dir if it doesn't exist ..."
           mkdir -p dist/
-          echo "Getting release_file and release_id ..."
+          echo "Getting release_file, release_tag, and release_id ..."
           release_file="$(ls dist/ | head -n 1)"
-          release_name="$(cat ./NEXE_ASSET_NAME)"
-          release_id="$(cat ./RELEASE_ID)"
+          asset_name="$(cat ./NEXE_ASSET_NAME)"
+          release_tag="$(cat ./RELEASE_TAG || true)"
+          release_id="$(cat ./RELEASE_ID || true)"
           echo "Getting build_occurred ..."
           if [ "$release_file" != "" ]; then
             build_occurred="true"
           else
             build_occurred="false"
           fi
+          echo "Moving build artifact to asset name ($release_file -> ./$asset_name) ..."
+          mv "dist/$release_file" "./$asset_name"
+          echo "release_tag=$release_tag"
           echo "release_id=$release_id"
           echo "release_file=$release_file"
-          echo "release_name=$release_name"
+          echo "asset_name=$asset_name"
           echo "build_occurred=$build_occurred"
-          echo "release_id=$release_id" >> $GITHUB_OUTPUT
-          echo "release_file=$release_file" >> $GITHUB_OUTPUT
-          echo "release_name=$release_name" >> $GITHUB_OUTPUT
+          echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
+          echo "asset_name=$asset_name" >> $GITHUB_OUTPUT
           echo "build_occurred=$build_occurred" >> $GITHUB_OUTPUT
-        env:
-          NODE_VERSION: ${{ matrix.node_version }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CREATE_RELEASE: "${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}"
 
       # Upload artifact & asset
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
-        if: steps.run_cd.outputs.build_occurred == 'true'
+        if: steps.build_info.outputs.build_occurred == 'true'
         with:
-          name: ${{ steps.run_cd.outputs.release_name }}
-          path: dist/${{ steps.run_cd.outputs.release_file }}
+          name: ${{ steps.build_info.outputs.asset_name }}
+          path: ./${{ steps.build_info.outputs.asset_name }}
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        if: steps.run_cd.outputs.build_occurred == 'true' && github.ref == 'refs/heads/main'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
+        if: steps.build_info.outputs.build_occurred == 'true' && github.ref == 'refs/heads/main'
         with:
-          upload_url: https://uploads.github.com/repos/urbdyn/nexe_builds/releases/${{ steps.run_cd.outputs.release_id }}/assets{?name,label}
-          asset_name: ${{ steps.run_cd.outputs.release_name }}
-          asset_path: dist/${{ steps.run_cd.outputs.release_file }}
-          asset_content_type: application/octet-stream
+          fail_on_unmatched_files: true
+          tag_name: ${{ steps.build_info.outputs.release_tag }}
+          files: ./${{ steps.build_info.outputs.asset_name }}
