@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         # NOTE: macos-13 = x64, macos-14 & macos-15 = arm64
-        os: [ubuntu-latest, windows-2019, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest] # TODO: Use windows-2019?
         node_version: ['20.18.3', '22.14.0']
 
     steps:
