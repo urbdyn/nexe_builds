@@ -39,6 +39,14 @@ jobs:
           key: ${{ matrix.os }}-${{ matrix.node_version }}
 
       - run: npm ci
+
+        # Brew install Python 3.10 on macOS for access to disutils package
+      - name: Set up Python 3.10 (macOS only)
+        if: runner.os == 'macOS'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
       - name: Run nexe CD build
         id: run_cd
         run: |
