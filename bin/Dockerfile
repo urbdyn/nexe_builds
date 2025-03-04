@@ -1,4 +1,5 @@
-# ghcr.io/urbdyn/centos7-devtoolset8-builder from 2023-02-09
-FROM ghcr.io/urbdyn/centos7-devtoolset8-builder@sha256:fdb324516c310aead90212f64481d92303c69c5c7815f409c3fc4f61e4b00894
+# ghcr.io/urbdyn/rockylinux9-builder from 2025-03-03
+FROM ghcr.io/urbdyn/rockylinux9-builder@sha256:f8394a5fffb5bf998ca4105b8552cdf2d3ff6c797d2afc280c348fdbd470ecb6
 
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash && \
+    mkdir -p /nexe_build/

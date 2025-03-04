@@ -16,7 +16,7 @@ fi
 if [ "$os_arch" = "x86_64" ]; then
   os_arch="x64"
 fi
-if [ "$os_arch" != "x64" ]; then
+if [ "$os_arch" != "x64" ] && [ "$os_arch" != "arm64" ]; then
   echo "Error! Unsupported architecture: $os_arch"
   exit 1
 fi
@@ -72,9 +72,6 @@ function main(){
       fi
 
       if [ "$os_env" = "linux" ]; then
-        echo "Running: source /opt/rh/devtoolset-8/enable"
-        source /opt/rh/devtoolset-8/enable
-
         export CC="$(which gcc)"
         export CXX="$(which g++)"
         echo "$CC --version = $($CC --version)"
@@ -101,9 +98,7 @@ function main(){
           ;;
       esac
 
-      python2_path="$(which python2)"
       python3_path="$(which python3)"
-      echo "python2_path=$python2_path"
       echo "python3_path=$python3_path"
       nexe_part_1_cmd="nexe --build --verbose --no-mangle --target=$nexe_target --make=-j$cpu_core_count"
       nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
@@ -112,18 +107,11 @@ function main(){
       echo "Building $nexe_no_mangle_name (python 3)"
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
       echo "  $nexe_cmd"
-      set +e
-      time npx $nexe_cmd || build_failed="true"
-      set -e
-      if [ "$build_failed" = "true" ]; then
-        echo "Trying fallback to python2 ..."
-        echo "Building $nexe_no_mangle_name (python 2)"
-        nexe_cmd="$nexe_part_1_cmd --python=$python2_path $nexe_part_3_cmd"
-        echo "  $nexe_cmd"
-        time npx $nexe_cmd
-      fi
+      time npx $nexe_cmd
       echo "Build finished."
       rm "$repo_dir/index.js"
+      # TODO: Run newly built binary to ensure it works.
+
       # Not compressing right now because nexe currently doesn't support downloading
       # compressed prebuilt binaries.
       #echo "Compressing outputted file ..."

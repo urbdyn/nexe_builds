@@ -5,7 +5,7 @@ set -e
 repo_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." >/dev/null 2>&1 && pwd )"
 script_dir="$repo_dir/bin"
 source "$script_dir/bash_utils.sh"
-os_env="$(get_os_type)"
+os_env="${OS:-$(get_os_type)}"
 
 if [ "$NODE_VERSION" = "" ]; then
     echo "Please set NODE_VERSION env. var."
@@ -36,24 +36,25 @@ echo "GIT_COMMIT=$GIT_COMMIT"
 echo ""
 
 if [ "$os_env" = "linux" ]; then
-    if [ "$IN_DOCKER" != "true" ]; then
-        echo "Doing linux build in docker container ..."
-        docker build --tag nexe_build_centos_7 "$script_dir/"
+    if [ "$IN_PODMAN" != "true" ]; then
+        mkdir -p "$repo_dir/dist/" "$repo_dir/build/ccache/" "$HOME/.ccache/"
+        echo "Doing linux build in podman container ..."
+        podman build --tag nexe_build_rocky_9 "$script_dir/"
         echo "Creating container ..."
-        docker create -t --name nexe_build_centos_7_container \
+        podman create -t --name nexe_build_rocky_9_container \
             -v "$repo_dir/bin/:/nexe_build/bin/" -v "$repo_dir/dist/:/nexe_build/dist/" -v "$HOME/.ccache/:/root/.ccache/" \
-            --env IN_DOCKER=true --env CREATE_RELEASE --env NODE_VERSION --env GIT_COMMIT --env GITHUB_TOKEN \
-            nexe_build_centos_7 /nexe_build/bin/run_cd ||  true
+            --env IN_PODMAN=true --env "CREATE_RELEASE=$CREATE_RELEASE" --env "NODE_VERSION=$NODE_VERSION" --env "GIT_COMMIT=$GIT_COMMIT" --env "GITHUB_TOKEN=$GITHUB_TOKEN" \
+            nexe_build_rocky_9 /nexe_build/bin/run_cd ||  true
             # -v "$HOME/.nexe/:/root/.nexe/" \
-        docker cp "$repo_dir/package.json" "nexe_build_centos_7_container:/nexe_build/package.json"
-        docker cp "$repo_dir/package-lock.json" "nexe_build_centos_7_container:/nexe_build/package-lock.json"
-        docker cp "$repo_dir/.nvmrc" "nexe_build_centos_7_container:/nexe_build/.nvmrc"
-        echo "Starting docker container build ..."
-        time docker start -a nexe_build_centos_7_container
-        echo "Completed docker container build."
+        podman cp "$repo_dir/package.json" "nexe_build_rocky_9_container:/nexe_build/package.json"
+        podman cp "$repo_dir/package-lock.json" "nexe_build_rocky_9_container:/nexe_build/package-lock.json"
+        podman cp "$repo_dir/.nvmrc" "nexe_build_rocky_9_container:/nexe_build/.nvmrc"
+        echo "Starting podman container build ..."
+        time podman start -a nexe_build_rocky_9_container
+        echo "Completed podman container build."
         echo "Copying out files ..."
-        docker cp "nexe_build_centos_7_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME"
-        docker cp "nexe_build_centos_7_container:/nexe_build/RELEASE_ID" "$repo_dir/RELEASE_ID"
+        podman cp "nexe_build_rocky_9_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME"
+        podman cp "nexe_build_rocky_9_container:/nexe_build/RELEASE_ID" "$repo_dir/RELEASE_ID"
         exit 0
     else
         echo "Installing desired version of node.js ..."
