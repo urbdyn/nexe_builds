@@ -107,9 +107,11 @@ function main(){
       echo "Building $nexe_no_mangle_name (python 3)"
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
       echo "  $nexe_cmd"
-      time npx $nexe_cmd || build_failed="true"
+      time npx $nexe_cmd
       echo "Build finished."
       rm "$repo_dir/index.js"
+      # TODO: Run newly built binary to ensure it works.
+
       # Not compressing right now because nexe currently doesn't support downloading
       # compressed prebuilt binaries.
       #echo "Compressing outputted file ..."

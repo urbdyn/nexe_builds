@@ -18,12 +18,9 @@ jobs:
         shell: bash
     strategy:
       matrix:
-        # TODO: Bump to windows-latest once it can be solved how to install Python2
-        # such that the Node.js build system can detect it.
         # NOTE: macos-13 = x64, macos-14 & macos-15 = arm64
-#        os: [ubuntu-latest, windows-2019, macos-latest]
-        os: [macos-latest]
-        node_version: ['18.18.0']
+        os: [ubuntu-latest, windows-2019, macos-latest]
+        node_version: ['18.20.7']
 
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +38,6 @@ jobs:
 
       - run: npm ci
 
-        # Brew install Python 3.10 on macOS for access to disutils package
       - name: Set up Python 3.10 (macOS only)
         if: runner.os == 'macOS'
         uses: actions/setup-python@v5
@@ -77,7 +73,6 @@ jobs:
           NODE_VERSION: ${{ matrix.node_version }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CREATE_RELEASE: "${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}"
-          CXXFLAGS: ${{ runner.os == 'macOS' && '-Wno-error=enum-constexpr-conversion' || '' }}
 
       # Upload artifact & asset
       - name: Upload build artifact
