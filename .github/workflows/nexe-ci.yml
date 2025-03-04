@@ -82,12 +82,9 @@ jobs:
           name: ${{ steps.run_cd.outputs.release_name }}
           path: dist/${{ steps.run_cd.outputs.release_file }}
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v2
         if: steps.run_cd.outputs.build_occurred == 'true' && github.ref == 'refs/heads/main'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: https://uploads.github.com/repos/urbdyn/nexe_builds/releases/${{ steps.run_cd.outputs.release_id }}/assets{?name,label}
-          asset_name: ${{ steps.run_cd.outputs.release_name }}
-          asset_path: dist/${{ steps.run_cd.outputs.release_file }}
-          asset_content_type: application/octet-stream
+          fail_on_unmatched_files: true
+          tag_name: ${{ steps.run_cd.outputs.release_name }}
+          files: dist/${{ steps.run_cd.outputs.release_file }}
