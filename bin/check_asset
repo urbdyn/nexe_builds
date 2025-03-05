@@ -94,6 +94,9 @@ async function main() {
             console.log(`Writing existing release ID (${existingRelease.id}) to file: RELEASE_ID`);
             const releaseIdPath = path.join(__dirname, '../RELEASE_ID');
             fs.writeFileSync(releaseIdPath, `${existingRelease.id}`);
+            console.log(`Writing existing release tag (${existingRelease.tag_name}) to file: RELEASE_TAG`);
+            const releaseTagPath = path.join(__dirname, '../RELEASE_TAG');
+            fs.writeFileSync(releaseTagPath, `${existingRelease.tag_name}`);
             const releaseAssetsNames = existingRelease.assets.map((x) => x.name);
             console.log(`Existing assets for release ${packageData.version}:`, releaseAssetsNames);
             const existingAsset = releaseAssetsNames.includes(nexeAssetName);
