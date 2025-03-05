@@ -9,8 +9,9 @@
 * Build matrix:
   * OS: `linux`, `macos`, `windows`
   * Node Version: `18.20.7`, `20.18.3`, `22.14.0`
-    * Added `20.18.3` on 2025-03-05.
-    * Added `22.14.0` on 2025-03-05.
+    * Added `18.20.7` on 2025-03-04 (Windows binary built with Visual Studio 2019).
+    * Added `20.18.3` on 2025-03-05 (Windows binary built with Visual Studio 2019).
+    * Added `22.14.0` on 2025-03-05 (Windows binary built with Visual Studio 2022).
 
 ## 0.3.0
 
