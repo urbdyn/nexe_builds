@@ -111,6 +111,7 @@ async function main() {
             }
         } else {
             let releaseId = 'none'; // Default to none unless release is created
+            let releaseTag = 'none'; // Default to none unless release is created
 
             console.log(`No existing release version '${packageData.version}' found.`);
             console.log(`Creating release '${packageData.version}' ...`)
@@ -129,13 +130,18 @@ async function main() {
                 console.log('Release created.');
                 console.log(createResponse);
                 releaseId = createResponse.data.id;
+                releaseTag = createResponse.data.tag_name;
             } else {
                 console.log('Skipping creating release due to --no-create-release flag.');
             }
 
+            console.log(`Writing new release tag (${releaseTag}) to file: RELEASE_TAG`);
+            const releaseTagPath = path.join(__dirname, '../RELEASE_TAG');
+            fs.writeFileSync(releaseTagPath, releaseTag);
+
             console.log(`Writing new release ID (${releaseId}) to file: RELEASE_ID`);
             const releaseIdPath = path.join(__dirname, '../RELEASE_ID');
-            fs.writeFileSync(releaseIdPath, 'none');
+            fs.writeFileSync(releaseIdPath, releaseId);
 
             console.log(`Build needed! Exiting with error code 10.`);
             process.exit(10);

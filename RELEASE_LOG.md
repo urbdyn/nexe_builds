@@ -1,5 +1,16 @@
 # urbdyn/nexe_builds release log
 
+## 0.4.0
+
+* Created on: 2025-03-04
+* Nexe version: 4.0.0-rc.6
+* Set Linux build to run in version pinned `ghcr.io/urbdyn/rockylinux9-builder` container which has preinstalled build tooling packages.
+* Set Linux build to use Node.js version as defined in `.nvmrc` file.
+* Build matrix:
+  * OS: `linux`, `macos`, `windows`
+  * Node Version: `18.20.7`, `20.18.3`
+    * Added `20.18.3` on 2025-03-05.
+
 ## 0.3.0
 
 * Created on: 2023-02-09

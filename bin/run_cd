@@ -54,6 +54,7 @@ if [ "$os_env" = "linux" ]; then
         echo "Completed podman container build."
         echo "Copying out files ..."
         podman cp "nexe_build_rocky_9_container:/nexe_build/NEXE_ASSET_NAME" "$repo_dir/NEXE_ASSET_NAME"
+        podman cp "nexe_build_rocky_9_container:/nexe_build/RELEASE_TAG" "$repo_dir/RELEASE_TAG"
         podman cp "nexe_build_rocky_9_container:/nexe_build/RELEASE_ID" "$repo_dir/RELEASE_ID"
         exit 0
     else

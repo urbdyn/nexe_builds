@@ -20,7 +20,7 @@ jobs:
       matrix:
         # NOTE: macos-13 = x64, macos-14 & macos-15 = arm64
         os: [ubuntu-latest, windows-2019, macos-latest]
-        node_version: ['18.20.7']
+        node_version: ['18.20.7', '20.18.3'] # TODO: Add 22.14.0 next
 
     steps:
       - uses: actions/checkout@v3
