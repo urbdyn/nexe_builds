@@ -8,8 +8,9 @@
 * Set Linux build to use Node.js version as defined in `.nvmrc` file.
 * Build matrix:
   * OS: `linux`, `macos`, `windows`
-  * Node Version: `18.20.7`, `20.18.3`
+  * Node Version: `18.20.7`, `20.18.3`, `22.14.0`
     * Added `20.18.3` on 2025-03-05.
+    * Added `22.14.0` on 2025-03-05.
 
 ## 0.3.0
 
