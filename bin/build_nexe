@@ -71,7 +71,7 @@ function main(){
         echo "No existing build detected. Compiling now."
       fi
 
-      if [ "$os_env" = "linux" ]; then
+      if [ "$os_env" = "linux" ] || [ "$os_env" = "mac" ] ; then
         export CC="$(which gcc)"
         export CXX="$(which g++)"
         echo "$CC --version = $($CC --version)"
@@ -81,8 +81,11 @@ function main(){
           echo "ccache detected!"
           export CC="ccache $CC"
           export CXX="ccache $CXX"
+          export CCACHE_DIR="$HOME/.ccache/"
           echo "CC=$CC"
           echo "CXX=$CXX"
+          echo "CCACHE_DIR=$CCACHE_DIR"
+          mkdir -p "$CCACHE_DIR"
         fi
       fi
 
@@ -101,16 +104,13 @@ function main(){
       python3_path="$(which python3)"
       echo "python3_path=$python3_path"
       nexe_part_1_cmd="nexe --build --verbose --no-mangle --target=$nexe_target --make=-j$cpu_core_count"
-      nexe_part_3_cmd="-o $nexe_no_mangle_path '$repo_dir/index.js'"
+      nexe_part_3_cmd="-o $nexe_no_mangle_path"
 
-      echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "$repo_dir/index.js"
       echo "Building $nexe_no_mangle_name (python 3)"
       nexe_cmd="$nexe_part_1_cmd --python=$python3_path $nexe_part_3_cmd"
       echo "  $nexe_cmd"
       time npx $nexe_cmd
       echo "Build finished."
-      rm "$repo_dir/index.js"
-      # TODO: Run newly built binary to ensure it works.
 
       # Not compressing right now because nexe currently doesn't support downloading
       # compressed prebuilt binaries.

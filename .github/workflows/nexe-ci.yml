@@ -18,13 +18,12 @@ jobs:
         shell: bash
     strategy:
       matrix:
-        # NOTE: macos-13 = x64, macos-14 & macos-15 = arm64
-        os: [ubuntu-latest, macos-latest]
-        node_version: ['18.20.7', '20.18.3', '22.14.0']
-        include:
-          - { os: windows-2019, node_version: '18.20.7' }
-          - { os: windows-2019, node_version: '20.18.3' }
-          - { os: windows-2022, node_version: '22.14.0' }
+        # NOTES:
+        # - macos-13 = x64, macos-14 & macos-15 = arm64
+        # - Node.js 22 LTS not currently supported (https://github.com/nexe/nexe/issues/1119)
+        # - Node.js 22 LTS requires windows-2022 to build
+        os: [ubuntu-24.04, windows-2019, macos-15]
+        node_version: ['18.20.7', '20.18.3']
 
     steps:
       - uses: actions/checkout@v3
@@ -96,7 +95,16 @@ jobs:
 
       - name: Testing binary
         if: steps.build_info.outputs.build_occurred == 'true'
-        run: ./${{ steps.build_info.outputs.asset_name }}
+        run: |
+          set -ex
+
+          mkdir -p ~/.nexe
+          cp ./${{ steps.build_info.outputs.asset_name }} ~/.nexe/ 
+          echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "./index.js"
+
+          npx nexe --target=${{ steps.build_info.outputs.asset_name }} -o ./nexe-test ./index.js
+          rm ./index.js
+          ./nexe-test
 
       # Upload artifact & asset
       - name: Upload build artifact
