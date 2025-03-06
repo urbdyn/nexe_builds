@@ -18,9 +18,12 @@ jobs:
         shell: bash
     strategy:
       matrix:
-        # NOTE: macos-13 = x64, macos-14 & macos-15 = arm64
-        os: [ubuntu-latest, windows-2019, macos-latest]
-        node_version: ['18.20.7', '20.18.3'] # TODO: Add 22.14.0 next
+        # NOTES:
+        # - macos-13 = x64, macos-14 & macos-15 = arm64
+        # - Node.js 22 LTS not currently supported (https://github.com/nexe/nexe/issues/1119)
+        # - Node.js 22 LTS requires windows-2022 to build
+        os: [ubuntu-24.04, windows-2019, macos-15]
+        node_version: ['18.20.7', '20.18.3']
 
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +33,8 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'npm'
       - name: Declare caches for build
-        uses: actions/cache@v3
+        id: cache-restore
+        uses: actions/cache/restore@v4
         with:
           path: |
             ~/.ccache/
@@ -53,9 +57,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CREATE_RELEASE: "${{ github.ref == 'refs/heads/main' && 'true' || 'false' }}"
 
+      - name: Save cache
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            ~/.ccache/
+          key: ${{ steps.cache-restore.outputs.cache-primary-key }}
+
       - name: Get nexe build info
         id: build_info
         run: |
+          set -e
           echo "github.ref = ${{ github.ref }}"
           echo "Creating dist/ dir if it doesn't exist ..."
           mkdir -p dist/
@@ -80,6 +92,19 @@ jobs:
           echo "release_tag=$release_tag" >> $GITHUB_OUTPUT
           echo "asset_name=$asset_name" >> $GITHUB_OUTPUT
           echo "build_occurred=$build_occurred" >> $GITHUB_OUTPUT
+
+      - name: Testing binary
+        if: steps.build_info.outputs.build_occurred == 'true'
+        run: |
+          set -ex
+
+          mkdir -p ~/.nexe
+          cp ./${{ steps.build_info.outputs.asset_name }} ~/.nexe/ 
+          echo "console.log('TEST NEXE SCRIPT'); console.log(process.version); var os = require('os'); console.log('os.userInfo() =', os.userInfo());" > "./index.js"
+
+          npx nexe --target=${{ steps.build_info.outputs.asset_name }} -o ./nexe-test ./index.js
+          rm ./index.js
+          ./nexe-test
 
       # Upload artifact & asset
       - name: Upload build artifact
